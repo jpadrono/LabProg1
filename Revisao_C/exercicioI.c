@@ -7,7 +7,7 @@ int main(void){
   printf("Insira o valor de n: ");
   scanf("%d", &n);
 
-  //printar od valores
+  //printar os valores de 2 em 2
   for(int i = 2; i < n; i += 2){
     printf("%d\t", i);
   } 

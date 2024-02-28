@@ -3,7 +3,7 @@
 float n;
 int m;
 
-//função recursiva para printar o maior par menor que um valor n
+//função recursiva para printar o maior par menor ou igual a um valor n
 void subtracaoRecursiva (int a) {
   //se a <= 2 encerra a fução (caso fundamental)
   if(a < 2){
@@ -13,7 +13,7 @@ void subtracaoRecursiva (int a) {
     //função recursiva é chamada no início para que os números sejam printados
     //em ordem crescente 
     subtracaoRecursiva(a - 2);
-    //calculo do maior número par menor que a
+    //calculo do maior número par menor ou igual que a
     int p = a - a%2;
     printf("%d\t", p);
     return;

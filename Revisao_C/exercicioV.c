@@ -7,10 +7,10 @@ int fb (int a){
   if(a == 0){
     return 0;
   }
- if (a == 2 || a == 1) {
-  return 1;
- }
- return fb(a-1) + fb(a-2);
+  if (a == 2 || a == 1) {
+    return 1;
+  }
+  return fb(a-1) + fb(a-2);
 }
 
 int n;

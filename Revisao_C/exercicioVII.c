@@ -14,25 +14,24 @@ int main(){
   vector = (int *)malloc(sizeof(int) * len);
 
   if (vector == NULL) {
-      printf("Memory allocation failed.\n");
+      printf("Alocação de memória falhou.\n");
       return 1;
   }
 
   printf("escolha o tamanho do vetor: ");
   scanf("%d", &n);
 
-  for(int i = 0; i < n; i++){
-    len++;
-    vector = (int *)realloc(vector, sizeof(int) * len);
+    vector = (int *)realloc(vector, sizeof(int) * n);
 
     if (vector == NULL) {
-        printf("Memory reallocation failed.\n");
+        printf("Realocação de memória falhou.\n");
         return 1;
     }
 
+  for(int i = 0; i < n; i++){
     int a;
     scanf("%d", &a);
-    vector[len-1] = a;
+    vector[i] = a;
   }
 
   //podemos usar qualquer algorítimo de sort então usarei o mais simples
@@ -51,6 +50,9 @@ int main(){
   for(int i = 0; i < n; i++){
     printf("%d ", vector[i]);
   }
+
+  //lembrar de liberar a memória, seu pc agradece
+  free(vector);
 
   return 0;
 }
