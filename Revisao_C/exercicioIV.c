@@ -11,7 +11,7 @@ float countF = 0;
 
 int main() {
 
-    fptr = fopen("C:\\Users\\Lenovo\\Desktop\\cpp\\Revisao_C\\exercicioIV.txt", "r");
+    fptr = fopen("exercicioIV.txt", "r");
 
     if(fptr == NULL){
         printf("Não foi possível abrir o arquivo\n");
