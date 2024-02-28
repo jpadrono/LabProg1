@@ -5,28 +5,21 @@
 //como C não possui um tipo vector, vamos ter que criar um usando ponteiros
 
 int n;
+int *vector = NULL;
+int len = 0;
 
 int main(){
-  int *vector = NULL;
-  int len = 0;
+
+  printf("escolha o tamanho do vetor: ");
+  scanf("%d", &n);
 
   //alocação dinâmica de memória
-  vector = (int *)malloc(sizeof(int) * len);
+  vector = (int *)malloc(sizeof(int) * n);
 
   if (vector == NULL) {
       printf("Alocação de memória falhou.\n");
       return 1;
   }
-
-  printf("escolha o tamanho do vetor: ");
-  scanf("%d", &n);
-
-    vector = (int *)realloc(vector, sizeof(int) * n);
-
-    if (vector == NULL) {
-        printf("Realocação de memória falhou.\n");
-        return 1;
-    }
 
   for(int i = 0; i < n; i++){
     int a;
