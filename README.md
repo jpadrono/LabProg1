@@ -1,3 +1,3 @@
 # LabProg1
 
-Aluno: *João* Pedro Souto Maior *Braga*
+Aluno: _João_ Pedro Souto Maior _Braga_
