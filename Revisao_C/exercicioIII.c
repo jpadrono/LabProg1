@@ -14,7 +14,7 @@ int count = 0;
 int main() {
 
   //abrir arquivo no modo "r", read
-  fptr = fopen("C:\\Users\\Lenovo\\Desktop\\cpp\\Revisao_C\\exercicioIII.txt", "r");
+  fptr = fopen("exercicioIII.txt", "r");
 
   //caso der erro ao abrir o arquivo
   if(fptr == NULL){
