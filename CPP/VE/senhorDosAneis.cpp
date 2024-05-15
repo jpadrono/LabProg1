@@ -44,11 +44,11 @@ class Soldado{
       return nome;
     }
 
-    int getSaude(){
+    double getSaude(){
       return saude;
     }
 
-    int getPoderDeAtaque(){
+    double getPoderDeAtaque(){
       return poderDeAtaque;
     }
 };
@@ -165,11 +165,11 @@ int main() {
   v.push_back(new Anao("Catamari", 23, 1));
   int ind = 0;
   while(v.size() > 1) {
-    shuffle(v.begin(), v.end(), gen(1000));
-    ind = gen(27) - 1;
+    // shuffle(v.begin(), v.end(), gen(1000));
+    ind = gen(1000)%v.size();
     auto first = v[ind];
     v.erase(v.begin() + ind);
-    ind = gen(27) - 1;
+    ind = gen(1000)%v.size();
     auto second = v[ind];
     v.erase(v.begin() + ind);
     cout << first->getNome();
@@ -181,6 +181,6 @@ int main() {
       cout << second->getNome() << " morreu lutando contra " << first->getNome() << endl;
     }
   }
-    cout << "O campeão é " << v[0]->getNome() << " com " << v[0]->getSaude() << " ponto(s) de vida!" << endl;
+  cout << "O campeão é " << v[0]->getNome() << " com " << v[0]->getSaude() << " ponto(s) de vida!" << endl;
   return 0;
 }
