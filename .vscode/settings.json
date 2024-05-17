@@ -5,6 +5,7 @@
     "algorithm": "cpp",
     "functional": "cpp",
     "xstddef": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "iostream": "cpp"
   }
 }
