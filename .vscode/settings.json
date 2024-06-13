@@ -6,6 +6,9 @@
     "functional": "cpp",
     "xstddef": "cpp",
     "ostream": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "xlocmon": "cpp",
+    "deque": "cpp",
+    "xstring": "cpp"
   }
 }
