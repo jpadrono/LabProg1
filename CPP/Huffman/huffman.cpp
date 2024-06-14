@@ -147,6 +147,52 @@ vector<pair<char,int>> readFile(string filename){
   inputFile.close();
   return newv;
 }
+void CreateEncodedFile(string filename, vector<pair<char,string>> v, string encoded){
+  ifstream inputFile;
+  inputFile.open(filename, ios::out);
+  if(!inputFile.is_open())
+    cout<<"Erro ao abrir o aquivo"<<endl;
+  char c;
+  string encodedText="";
+  while(inputFile.get(c)){
+    for(auto itr: v){
+         if(itr.first == c)
+            encodedText+=itr.second;   
+      }
+  }
+    inputFile.close();
+    ofstream encodedFile;
+    encodedFile.open(encoded, ios::out);
+    if(!encodedFile.is_open())
+      cout<<"Erro ao abrir o aquivo"<<endl;
+    encodedFile<<encodedText;
+    encodedFile.close();
+}
+void CreateDecodedFile(string encoded, vector<pair<char,string>> v){
+  ifstream encodedFile;
+  encodedFile.open(encoded, ios::in);
+  if(!encodedFile.is_open())
+    cout<<"Erro ao abrir o aquivo"<<endl;
+  string decodedText= "", aux="";
+  char c;
+  while(encodedFile.get(c)){
+      aux+= c;
+      for(auto itr: v){
+        if(itr.second == aux)
+        {
+          decodedText += itr.first;
+          aux= ""; 
+        }
+      }
+  }
+  encodedFile.close();
+  ofstream decodedFile;
+  decodedFile.open("decodificado.txt", ios::out);
+  if(!decodedFile.is_open())
+    cout<<"Erro ao abrir o aquivo"<<endl;
+  decodedFile<<decodedText;
+  decodedFile.close();
+}
 
 // estrutura da função de decodificação
 // void DecodedFile(vector<pair<char,string>>, string filename){
@@ -216,6 +262,9 @@ int main() {
     for(auto itr:huffmanVec){
       cout << itr.first << " " << itr.second << endl;
     }
+    string encodedFile="codificado.txt";
+    CreateEncodedFile(filename, huffmanVec, encodedFile);
+    CreateDecodedFile(encodedFile,huffmanVec);
     
 
     return 0;

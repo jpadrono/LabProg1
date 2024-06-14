@@ -9,6 +9,7 @@
     "iostream": "cpp",
     "xlocmon": "cpp",
     "deque": "cpp",
-    "xstring": "cpp"
+    "xstring": "cpp",
+    "iosfwd": "cpp"
   }
 }
