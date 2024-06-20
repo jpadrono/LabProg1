@@ -472,19 +472,32 @@ class lig4Tradicional: public Lig4{
 
     }
     
-    void jogo(){
-      cout << "    JOGO INICIADO!" << endl;
-      limpar();
-      while(resultado() == 3){
-        exibe();
-        int n;
-        cout << "Vez do jogador " << jogadores[vez] << endl;
-        cout << "escolha a coluna em que será colocada a peça: ";
-        cin >> n;
-        jogar(n);
+    void limpar(){
+      for(int i = 0 ; i < colunas; i++){
+        for(int j = 0; j < linhas; j++){
+          tabuleiro[i][j] = '.';
+        }
       }
-      exibe();
-      switch (resultado()){
+      moves = 0;
+    }
+
+    void jogo(){
+      while(resultado() != 2){
+        cout << "    JOGO INICIADO!" << endl;
+        limpar();
+        exibe();
+        while(resultado() == 3){
+          if(getVez()){
+            cout << "\tJogada Aleatória " << endl;
+            jogadaAleatoria();
+          }
+          else if(!getVez()){
+            cout << "\tJogada do Bot " << endl;
+            jogadaBot();
+          }
+          exibe();
+        }
+        switch (resultado()){
         case VitoriaX:
           cout << "Vitória do Jogador" << jogadores[0] << endl;
           break;
@@ -494,9 +507,10 @@ class lig4Tradicional: public Lig4{
         case Empate:
           cout << "Jogo terminou empatado" << endl;
           break;
-       case Continua:
-          cout << "Erro encontrado, Jogo finalizou em Continua" << endl;
-          exit(1); 
+        case Continua:
+            cout << "Erro encontrado, Jogo finalizou em Continua" << endl;
+            exit(1); 
+        }
       }
     }
     
@@ -574,6 +588,10 @@ class lig4Tradicional: public Lig4{
     }
 
     void jogadaBot(){
+      if(!nbMoves()){
+        jogar(4);
+        return;
+      }
       int melhorJogada = solve(*this);
       jogar(melhorJogada);
     }
@@ -599,6 +617,6 @@ class lig4Tradicional: public Lig4{
 int main(){
   
   lig4Tradicional a;
-  
+  a.jogo();
   return 0;
 }
