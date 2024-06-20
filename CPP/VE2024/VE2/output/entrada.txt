@@ -1,0 +1,5 @@
+Jonesy,Ninja,100
+Peely Constructor,Banana,80
+Midas,Out Lander,90
+Jonesy,Soldier,70
+Drift,Commando,85

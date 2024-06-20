@@ -22,6 +22,7 @@
 #include <random>
 #include <memory>
 
+
 using namespace std;
 
 class Lig4{
@@ -55,7 +56,7 @@ class Lig4{
       }
       for(int i = 0 ; i < l.colunas; i++){
         for(int j = 0; j < l.linhas; j++){
-          tabuleiro[i][j] = '.';
+          tabuleiro[i][j] = l.tabuleiro[i][j];
         }
       }
       vez = l.vez;
@@ -81,6 +82,7 @@ class Lig4{
           cout << endl;
         }
     }
+    
     void limpar(){
       for(int i = 0 ; i < colunas; i++){
           for(int j = 0; j < linhas; j++){
@@ -88,11 +90,10 @@ class Lig4{
           }
         }
     }
+    
     void trocarVez(){
         vez = !vez;
     }
-
-
 
     bool jogadaValida(int colunaSelecionada){
       if(colunaSelecionada > colunas){
@@ -313,8 +314,11 @@ class Lig4{
 
 class lig4Tradicional: public Lig4{
   enum estado { VitoriaX, VitoriaO, Empate, Continua};
+  int moves;
+  long long nodeCount;
+
   public:
-    lig4Tradicional():Lig4(7,6){};
+    lig4Tradicional():Lig4(7,6), moves(0), nodeCount(0){};
 
     estado resultado(){
 
@@ -495,28 +499,99 @@ class lig4Tradicional: public Lig4{
           exit(1); 
       }
     }
+    
+    void jogar(int colunaSelecionada){
+      if(jogadaValida(colunaSelecionada-1)){
+        for(int i = linhas-1; i >= 0; i--){
+          if(tabuleiro[colunaSelecionada-1][i] == '.'){
+            tabuleiro[colunaSelecionada-1][i] = jogadores[vez];
+            moves++;
+            if(tabuleiroCompleto()){
+              resultado();
+              return;
+            }
+            trocarVez();
+            break;
+          }
+        }
+      }
+      else{
+        cout << "jogada inválida" << endl;
+      }
+    }
 
-    int negamax(const char **tabuleiro) {
+    bool jogadaGanhadora(int colunaSelecionada){
+      lig4Tradicional ligTemp(*this);
+      ligTemp.jogar(colunaSelecionada);
+      if(ligTemp.resultado() == VitoriaX && !getVez()){
+        return true;
+      }else if(ligTemp.resultado() == VitoriaO && getVez()){
+        return true;
+      }
+      return false;
+    }
+
+    pair<int,int> negamax(const lig4Tradicional& lig, int alpha, int beta) {
       nodeCount++; // increment counter of explored nodes
 
-      if(P.nbMoves() == Position::WIDTH*Position::HEIGHT) // check for draw game
-        return 0; 
+      if(resultado() == Empate){
+        return {0,0}; 
+      } // check for draw game
 
-      for(int x = 0; x < Position::WIDTH; x++) // check if current player can win next move
-        if(P.canPlay(x) && P.isWinningMove(x)) 
-          return (Position::WIDTH*Position::HEIGHT+1 - P.nbMoves())/2;
-
-      int bestScore = -Position::WIDTH*Position::HEIGHT; // init the best possible score with a lower bound of score.
-      
-      for(int x = 0; x < Position::WIDTH; x++) // compute the score of all possible next move and keep the best one
-        if(P.canPlay(x)) {
-          Position P2(P);
-          P2.play(x);               // It's opponent turn in P2 position after current player plays x column.
-          int score = -negamax(P2); // If current player plays col x, his score will be the opposite of opponent's score after playing col x
-          if(score > bestScore) bestScore = score; // keep track of best possible score so far.
+      for(int x = 1; x <= colunas; x++){
+        if(jogadaValida(x-1) && jogadaGanhadora(x)){
+          return {(colunas*linhas+1 - nbMoves())/2, x};
         }
+      } // check if current player can win next move
 
-      return bestScore;
+      int max = (colunas*linhas-1 - nbMoves())/2;
+      if(beta > max){
+        beta = max;
+        if(alpha >= beta) return {beta, 0};
+      }
+      int bestMove = -1;
+
+      for(int x = 1; x <= colunas; x++){
+        if(jogadaValida(x-1)) {
+          lig4Tradicional lig_2(lig);
+          lig_2.jogar(x);               // It's opponent turn in P2 position after current player plays x column.
+          int score = -lig_2.negamax(lig_2, -beta, -alpha).first; // If current player plays col x, his score will be the opposite of opponent's score after playing col x
+          if(score >= beta) return {score, x};
+          if(score > alpha){
+            alpha = score;
+            bestMove = x;
+          } 
+        }
+      } // compute the score of all possible next move and keep the best one
+
+      return {alpha, bestMove};
+    }
+
+    int solve(const lig4Tradicional &lig) 
+    {
+      nodeCount = 0;
+      return negamax(lig, -99999, 99999).second;
+    }
+
+    void jogadaBot(){
+      int melhorJogada = solve(*this);
+      jogar(melhorJogada);
+    }
+
+    void jogadaAleatoria(){
+      while(!tabuleiroCompleto()){
+        random_device rd;
+        mt19937_64 gen(rd());
+        uniform_int_distribution<int> dis(1, 7);
+        int random_number = dis(gen);
+        if(jogadaValida(random_number-1)){
+            jogar(random_number);
+            return;
+        }
+      }
+    }
+    int nbMoves(){
+      return moves;
     }
 };
 
@@ -524,7 +599,6 @@ class lig4Tradicional: public Lig4{
 int main(){
   
   lig4Tradicional a;
-  a.jogo();
   
   return 0;
 }
