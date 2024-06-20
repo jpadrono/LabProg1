@@ -591,6 +591,15 @@ class lig4Tradicional: public Lig4{
       if(!nbMoves()){
         jogar(4);
         return;
+      }else if(nbMoves() == 2){
+        if(tabuleiro[0][linhas-1] == 'O' || tabuleiro[6][linhas-2] == 'O' ){
+          jogar(4);
+        }else if(tabuleiro[1][linhas-1] == 'O' || tabuleiro[2][linhas-1] == 'O'){
+          jogar(6);
+        }else{
+          jogar(2);
+        }
+        return;
       }
       int melhorJogada = solve(*this);
       jogar(melhorJogada);
