@@ -16,6 +16,7 @@
 #include <deque>
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <bitset>
 #include <utility>
 #include <algorithm>
@@ -89,6 +90,7 @@ class Lig4{
             tabuleiro[i][j] = '.';
           }
         }
+      vez = false;
     }
     
     void trocarVez(){
@@ -315,13 +317,17 @@ class Lig4{
 class lig4Tradicional: public Lig4{
   enum estado { VitoriaX, VitoriaO, Empate, Continua};
   int moves;
-  long long nodeCount;
+  
+  /*
+    Move-Exploration-Order
+  */
+  vector<int> ordemDasColunas;
 
   public:
-    lig4Tradicional():Lig4(7,6), moves(0), nodeCount(0){};
+    lig4Tradicional():
+      Lig4(7,6), moves(0), ordemDasColunas({4, 3, 5, 2, 6, 1, 7}){}
 
     estado resultado(){
-
       char *ptr1, *ptr2;
       int countAux = 0;
       /*
@@ -473,29 +479,27 @@ class lig4Tradicional: public Lig4{
     }
     
     void limpar(){
-      for(int i = 0 ; i < colunas; i++){
-        for(int j = 0; j < linhas; j++){
-          tabuleiro[i][j] = '.';
-        }
-      }
       moves = 0;
+      vez = false;
+      Lig4::limpar();
     }
 
     void jogo(){
-      while(resultado() != 2){
-        cout << "    JOGO INICIADO!" << endl;
+      int contador = 0;
+      while(resultado() != VitoriaO){
+        // cout << "    JOGO INICIADO!" << endl;
         limpar();
-        exibe();
-        while(resultado() == 3){
+        // exibe();
+        while(resultado() == Continua){
           if(getVez()){
-            cout << "\tJogada Aleatória " << endl;
+            // cout << "\tJogada Aleatória " << endl;
             jogadaAleatoria();
           }
           else if(!getVez()){
-            cout << "\tJogada do Bot " << endl;
+            // cout << "\tJogada do Bot " << endl;
             jogadaBot();
           }
-          exibe();
+          // exibe();
         }
         switch (resultado()){
         case VitoriaX:
@@ -511,14 +515,17 @@ class lig4Tradicional: public Lig4{
             cout << "Erro encontrado, Jogo finalizou em Continua" << endl;
             exit(1); 
         }
+        cout << "tome-le pau: " << ++contador << endl;
       }
+      cout << "núemro de vitórias de X: " << --contador << endl;
     }
-    
+
     void jogar(int colunaSelecionada){
       if(jogadaValida(colunaSelecionada-1)){
         for(int i = linhas-1; i >= 0; i--){
           if(tabuleiro[colunaSelecionada-1][i] == '.'){
             tabuleiro[colunaSelecionada-1][i] = jogadores[vez];
+            //track do número de jogadas
             moves++;
             if(tabuleiroCompleto()){
               resultado();
@@ -545,18 +552,33 @@ class lig4Tradicional: public Lig4{
       return false;
     }
 
-    pair<int,int> negamax(const lig4Tradicional& lig, int alpha, int beta) {
-      nodeCount++; // increment counter of explored nodes
+    /*
+      Negamax variant of alpha-beta
+    */
+    pair<int,int> negamax(const lig4Tradicional& lig, int alpha, int beta, int profundidade) {
+      assert(alpha < beta);
 
       if(resultado() == Empate){
         return {0,0}; 
-      } // check for draw game
+      }
+      if(profundidade == 0){
+        if(resultado() == VitoriaX){
+          return{1,0};
+        }
+        else if(resultado() == VitoriaO){
+          return{-1,0};
+        }
+      }
 
       for(int x = 1; x <= colunas; x++){
         if(jogadaValida(x-1) && jogadaGanhadora(x)){
           return {(colunas*linhas+1 - nbMoves())/2, x};
         }
-      } // check if current player can win next move
+      }
+
+      if(profundidade == 0 && resultado() == Continua){
+        return{0,0};
+      }
 
       int max = (colunas*linhas-1 - nbMoves())/2;
       if(beta > max){
@@ -565,15 +587,17 @@ class lig4Tradicional: public Lig4{
       }
       int bestMove = -1;
 
-      for(int x = 1; x <= colunas; x++){
-        if(jogadaValida(x-1)) {
+      for(int x = 0; x < colunas; x++){
+        if(jogadaValida(ordemDasColunas[x] - 1)) {
           lig4Tradicional lig_2(lig);
-          lig_2.jogar(x);               // It's opponent turn in P2 position after current player plays x column.
-          int score = -lig_2.negamax(lig_2, -beta, -alpha).first; // If current player plays col x, his score will be the opposite of opponent's score after playing col x
-          if(score >= beta) return {score, x};
+          lig_2.jogar(ordemDasColunas[x]); // It's opponent turn in P2 position after current player plays x column.
+          int score = -lig_2.negamax(lig_2, -beta, -alpha, profundidade -1).first; // If current player plays col x, his score will be the opposite of opponent's score after playing col x
+          if(score >= beta){
+            return {score, ordemDasColunas[x]}; 
+          }
           if(score > alpha){
             alpha = score;
-            bestMove = x;
+            bestMove = ordemDasColunas[x];
           } 
         }
       } // compute the score of all possible next move and keep the best one
@@ -583,11 +607,11 @@ class lig4Tradicional: public Lig4{
 
     int solve(const lig4Tradicional &lig) 
     {
-      nodeCount = 0;
-      return negamax(lig, -99999, 99999).second;
+      return negamax(lig, -99999, 99999, 9).second;
     }
 
     void jogadaBot(){
+      
       if(!nbMoves()){
         jogar(4);
         return;
